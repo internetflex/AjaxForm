@@ -1,0 +1,54 @@
+﻿@model SbpQuery.Models.QueryDetails
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@using (Html.BeginForm("GetDetails", "Home", FormMethod.Post, new {id = "formDetails"}))
+{
+     @Html.LabelFor(model => model.CaseId)
+     @Html.TextBoxFor(model => model.CaseId)<br>
+    
+     @Html.LabelFor(model => model.Username)
+     @Html.TextBoxFor(model => model.Username)<br>
+                                              
+     @Html.LabelFor(model => model.QueryAnswer)
+     @Html.TextAreaFor(model => model.QueryAnswer, new {id = "resultText"})                                              
+
+     @Html.HiddenFor(x => x.Request);
+                                              
+    <div>
+      <input type="submit" name="Import" value="Import" />
+      <input type="submit" name="Allocation" value="Allocation" />
+    </div>    
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#formDetails').submit(function (event) {
+                    event.preventDefault();
+                
+                    var pressedButtonName =
+                         typeof $(":input[type=submit]:focus")[0] === "undefined" ?
+                         $(":input[type=submit]:first")[0].name :
+                         $(":input[type=submit]:focus")[0].name;
+
+                    $("#Request").val(pressedButtonName);
+                
+                    $.ajax({
+                        type: 'POST',
+                        url: "/home/GetDetails",
+                        dataType: 'json',
+                        data: $("#formDetails").serialize(),
+                        success: function (data) {
+                            $("#resultText").val(data);
+                        },
+                        error: function (xhr, status, errorDesc) {
+                            alert(errorDesc);
+                    }
+                });
+            });
+        });
+    </script>
+}
